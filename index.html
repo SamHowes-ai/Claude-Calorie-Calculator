@@ -15,165 +15,181 @@
     justify-content:center;padding:20px;
   }
 
-  /* Floating card animation */
-  @keyframes float {
+  @keyframes floatCard {
     0%,100%{transform:translateY(0px);}
-    50%{transform:translateY(-8px);}
-  }
-  @keyframes fadeSlideIn {
-    from{opacity:0;transform:translateX(30px);}
-    to{opacity:1;transform:translateX(0);}
-  }
-  @keyframes fadeSlideOut {
-    from{opacity:1;transform:translateX(0);}
-    to{opacity:0;transform:translateX(-30px);}
-  }
-  @keyframes progressFill {
-    from{background:#222;}
-    to{background:#c9a84c;}
+    50%{transform:translateY(-7px);}
   }
   @keyframes shimmer {
     0%{background-position:-200% center;}
     100%{background-position:200% center;}
   }
   @keyframes popIn {
-    0%{opacity:0;transform:scale(0.8);}
-    70%{transform:scale(1.05);}
-    100%{opacity:1;transform:scale(1);}
+    0%{opacity:0;transform:translateY(16px);}
+    100%{opacity:1;transform:translateY(0);}
+  }
+  @keyframes countUp {
+    from{opacity:0;transform:translateY(8px);}
+    to{opacity:1;transform:translateY(0);}
   }
 
-  .logo{text-align:center;margin-bottom:28px;animation:fadeSlideIn .6s ease both;}
+  .logo{text-align:center;margin-bottom:28px;opacity:0;animation:popIn .7s .1s cubic-bezier(.22,1,.36,1) forwards;}
   .logo span{font-family:'Playfair Display',serif;font-size:1.5rem;color:#c9a84c;letter-spacing:2px;}
   .logo p{font-size:.65rem;letter-spacing:4px;color:#888;text-transform:uppercase;margin-top:4px;}
 
   .card{
-    background:#111;border:1px solid #222;border-radius:16px;padding:40px 36px;
-    width:100%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,.7);
-    animation:float 6s ease-in-out infinite;
+    background:#111;border:1px solid #1e1e1e;border-radius:20px;padding:40px 36px;
+    width:100%;max-width:500px;
+    box-shadow:0 24px 80px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.03);
+    animation:floatCard 7s ease-in-out infinite;
+    opacity:0;animation:popIn .7s .25s cubic-bezier(.22,1,.36,1) forwards, floatCard 7s 1s ease-in-out infinite;
   }
 
+  /* Progress */
   .progress{display:flex;gap:8px;margin-bottom:32px;}
   .progress-step{
-    flex:1;height:3px;background:#222;border-radius:2px;
-    transition:background .6s cubic-bezier(.4,0,.2,1);
+    flex:1;height:3px;background:#1e1e1e;border-radius:2px;
+    transition:background .5s cubic-bezier(.22,1,.36,1);
   }
   .progress-step.active{background:#c9a84c;}
-  .progress-step.just-activated{animation:progressFill .6s ease forwards;}
 
-  .step-content{animation:fadeSlideIn .35s ease both;}
+  /* Step transition wrapper */
+  .step-wrap{
+    transition:opacity .25s ease, transform .25s cubic-bezier(.22,1,.36,1);
+  }
+  .step-wrap.leaving{
+    opacity:0;transform:translateX(-18px);pointer-events:none;
+  }
+  .step-wrap.entering{
+    opacity:0;transform:translateX(18px);
+  }
+  .step-wrap.visible{
+    opacity:1;transform:translateX(0);
+  }
 
   h2{font-family:'Playfair Display',serif;font-size:1.6rem;color:#fff;margin-bottom:6px;}
-  .subtitle{font-size:.78rem;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:28px;}
+  .subtitle{font-size:.72rem;color:#666;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:28px;}
 
   .field{margin-bottom:18px;}
-  label{display:block;font-size:.72rem;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;}
+  label{display:block;font-size:.7rem;color:#888;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:8px;}
   input,select{
-    width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;
+    width:100%;background:#161616;border:1px solid #222;border-radius:10px;
     padding:13px 16px;color:#f0f0f0;font-family:'Montserrat',sans-serif;font-size:.9rem;
-    outline:none;transition:border .2s,box-shadow .2s;
+    outline:none;transition:border-color .2s, box-shadow .2s;
   }
-  input:focus,select:focus{border-color:#c9a84c;box-shadow:0 0 0 3px rgba(201,168,76,.1);}
-  select option{background:#1a1a1a;}
+  input:focus,select:focus{
+    border-color:#c9a84c;
+    box-shadow:0 0 0 3px rgba(201,168,76,.08);
+  }
+  select option{background:#161616;}
 
   .row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 
+  /* Gender buttons — no re-render, just class toggle */
   .gender-group{display:flex;gap:10px;}
   .gender-btn{
-    flex:1;padding:12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;
-    color:#aaa;font-family:'Montserrat',sans-serif;font-size:.82rem;cursor:pointer;
-    transition:all .25s;letter-spacing:.5px;
+    flex:1;padding:12px;background:#161616;border:1px solid #222;border-radius:10px;
+    color:#666;font-family:'Montserrat',sans-serif;font-size:.82rem;cursor:pointer;
+    letter-spacing:.5px;transition:border-color .25s, color .25s, background .25s;
   }
-  .gender-btn:hover{border-color:#444;color:#ddd;}
-  .gender-btn.selected{background:#1e1a0e;border-color:#c9a84c;color:#c9a84c;}
+  .gender-btn.selected{background:#1a1500;border-color:#c9a84c;color:#c9a84c;}
 
+  /* Pace / barrier buttons — no re-render */
   .pace-group{display:flex;gap:10px;flex-direction:column;}
   .pace-btn{
-    padding:14px 16px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;
+    padding:14px 16px;background:#161616;border:1px solid #222;border-radius:10px;
     color:#aaa;font-family:'Montserrat',sans-serif;font-size:.82rem;cursor:pointer;
-    transition:all .25s;text-align:left;
+    transition:border-color .25s, background .25s, transform .25s cubic-bezier(.22,1,.36,1);
+    text-align:left;
   }
-  .pace-btn:hover{border-color:#444;transform:translateX(4px);}
-  .pace-btn .pace-title{font-weight:700;color:#ddd;display:block;margin-bottom:2px;}
-  .pace-btn .pace-desc{font-size:.72rem;color:#666;}
-  .pace-btn.selected{background:#1e1a0e;border-color:#c9a84c;transform:translateX(4px);}
+  .pace-btn:hover{border-color:#333;transform:translateX(3px);}
+  .pace-btn .pace-title{font-weight:700;color:#ccc;display:block;margin-bottom:3px;transition:color .25s;}
+  .pace-btn .pace-desc{font-size:.72rem;color:#555;}
+  .pace-btn.selected{background:#1a1500;border-color:#c9a84c;transform:translateX(3px);}
   .pace-btn.selected .pace-title{color:#c9a84c;}
 
   .btn{
-    width:100%;padding:16px;background:linear-gradient(135deg,#c9a84c,#e8c96a);
-    border:none;border-radius:8px;color:#0a0a0a;font-family:'Montserrat',sans-serif;
-    font-weight:800;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;
-    cursor:pointer;margin-top:10px;transition:opacity .2s,transform .2s;
+    width:100%;padding:15px;
+    background:linear-gradient(135deg,#c9a84c,#e8c96a);
+    border:none;border-radius:10px;color:#0a0a0a;
+    font-family:'Montserrat',sans-serif;font-weight:800;font-size:.88rem;
+    letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:12px;
+    transition:opacity .2s, transform .2s cubic-bezier(.22,1,.36,1), box-shadow .2s;
   }
-  .btn:hover{opacity:.9;transform:translateY(-2px);}
-  .btn:active{transform:translateY(0);}
-  .btn-outline{
-    background:transparent;border:1px solid #333;color:#888;font-weight:600;margin-top:8px;
-  }
-  .btn-outline:hover{border-color:#555;color:#aaa;opacity:1;transform:translateY(-2px);}
+  .btn:hover{opacity:.92;transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,.25);}
+  .btn:active{transform:translateY(0);box-shadow:none;}
 
-  .error{color:#e05555;font-size:.72rem;margin-top:4px;display:none;}
+  .btn-outline{
+    background:transparent;border:1px solid #222;color:#555;
+    font-weight:600;margin-top:8px;box-shadow:none;
+  }
+  .btn-outline:hover{border-color:#444;color:#888;opacity:1;box-shadow:none;}
+
+  .error{color:#e05555;font-size:.72rem;margin-top:6px;display:none;}
 
   /* Results */
   .stat-card{
-    background:#161616;border:1px solid #222;border-radius:12px;padding:20px 22px;
-    margin-bottom:14px;animation:popIn .5s ease both;
+    background:#141414;border:1px solid #1e1e1e;border-radius:14px;
+    padding:20px 22px;margin-bottom:12px;
+    opacity:0;animation:popIn .5s cubic-bezier(.22,1,.36,1) forwards;
   }
-  .stat-card:nth-child(2){animation-delay:.1s;}
-  .stat-card:nth-child(3){animation-delay:.2s;}
+  .stat-card:nth-child(1){animation-delay:.05s;}
+  .stat-card:nth-child(2){animation-delay:.12s;}
 
-  .stat-label{font-size:.65rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
-  .stat-value{font-size:2rem;font-weight:800;color:#c9a84c;}
-  .stat-sub{font-size:.75rem;color:#666;margin-top:4px;}
+  .stat-label{font-size:.62rem;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+  .stat-value{font-size:2rem;font-weight:800;color:#c9a84c;line-height:1;}
+  .stat-sub{font-size:.73rem;color:#444;margin-top:6px;}
 
-  .macros{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;}
+  .macros{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;}
   .macro-card{
-    background:#161616;border:1px solid #222;border-radius:12px;padding:16px 12px;
-    text-align:center;animation:popIn .5s ease both;
+    background:#141414;border:1px solid #1e1e1e;border-radius:14px;padding:16px 12px;
+    text-align:center;opacity:0;animation:popIn .5s cubic-bezier(.22,1,.36,1) forwards;
   }
-  .macro-card:nth-child(1){animation-delay:.25s;}
-  .macro-card:nth-child(2){animation-delay:.35s;}
-  .macro-card:nth-child(3){animation-delay:.45s;}
-  .macro-label{font-size:.6rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
-  .macro-value{font-size:1.3rem;font-weight:800;color:#fff;}
-  .macro-unit{font-size:.65rem;color:#666;margin-top:2px;}
+  .macro-card:nth-child(1){animation-delay:.2s;}
+  .macro-card:nth-child(2){animation-delay:.27s;}
+  .macro-card:nth-child(3){animation-delay:.34s;}
+  .macro-label{font-size:.58rem;color:#555;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+  .macro-value{font-size:1.3rem;font-weight:800;color:#e0e0e0;}
+  .macro-unit{font-size:.63rem;color:#444;margin-top:3px;}
 
   .timeline-card{
-    background:linear-gradient(135deg,#1a1500,#1e1a0e);border:1px solid #c9a84c44;
-    border-radius:12px;padding:20px 22px;margin-bottom:20px;
-    animation:popIn .5s .5s ease both;
+    background:linear-gradient(135deg,#141100,#1a1600);
+    border:1px solid rgba(201,168,76,.15);border-radius:14px;
+    padding:20px 22px;margin-bottom:16px;
+    opacity:0;animation:popIn .5s .42s cubic-bezier(.22,1,.36,1) forwards;
   }
-  .timeline-card .stat-value{font-size:1.6rem;}
+  .timeline-card .stat-value{font-size:1.55rem;}
 
-  /* Shimmer CTA */
   .cta-box{
-    background:#111;border:1px solid #c9a84c44;border-radius:12px;padding:24px;
-    text-align:center;margin-top:8px;animation:popIn .5s .6s ease both;
+    background:#111;border:1px solid rgba(201,168,76,.12);border-radius:14px;
+    padding:24px;text-align:center;
+    opacity:0;animation:popIn .5s .52s cubic-bezier(.22,1,.36,1) forwards;
   }
   .cta-box h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:#c9a84c;margin-bottom:8px;}
-  .cta-box p{font-size:.78rem;color:#888;margin-bottom:16px;line-height:1.6;}
+  .cta-box p{font-size:.78rem;color:#666;margin-bottom:18px;line-height:1.7;}
+
   .btn-cta{
-    padding:14px 28px;border:none;border-radius:8px;color:#0a0a0a;
+    padding:15px 32px;border:none;border-radius:10px;color:#0a0a0a;
     font-family:'Montserrat',sans-serif;font-weight:800;font-size:.82rem;
     letter-spacing:2px;text-transform:uppercase;cursor:pointer;
     text-decoration:none;display:inline-block;
     background:linear-gradient(90deg,#c9a84c,#e8c96a,#fff5c0,#e8c96a,#c9a84c);
     background-size:200% auto;
     animation:shimmer 3s linear infinite;
-    transition:transform .2s,box-shadow .2s;
+    transition:transform .2s cubic-bezier(.22,1,.36,1), box-shadow .2s;
   }
-  .btn-cta:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(201,168,76,.4);}
+  .btn-cta:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(201,168,76,.35);}
 
   .lead-lock{text-align:center;margin-bottom:24px;}
-  .lead-lock .lock-icon{font-size:2.5rem;margin-bottom:12px;display:block;animation:float 3s ease-in-out infinite;}
-  .lead-lock h2{font-size:1.5rem;}
-  .lead-lock p{color:#888;font-size:.8rem;margin-top:8px;line-height:1.6;}
+  .lead-lock .lock-icon{font-size:2.2rem;margin-bottom:10px;display:block;}
+  .lead-lock h2{font-size:1.45rem;}
+  .lead-lock p{color:#666;font-size:.78rem;margin-top:8px;line-height:1.7;}
 
-  .results-header{text-align:center;margin-bottom:28px;animation:fadeSlideIn .4s ease both;}
-  .results-header h2{font-size:1.8rem;}
-  .results-header p{color:#888;font-size:.8rem;margin-top:6px;}
+  .results-header{text-align:center;margin-bottom:24px;opacity:0;animation:popIn .5s cubic-bezier(.22,1,.36,1) forwards;}
+  .results-header h2{font-size:1.7rem;}
+  .results-header p{color:#555;font-size:.78rem;margin-top:6px;}
 
-  .disclaimer{font-size:.65rem;color:#555;text-align:center;margin-top:20px;line-height:1.6;animation:fadeSlideIn .6s .3s ease both;}
-  .sending{opacity:.6;pointer-events:none;}
+  .disclaimer{font-size:.62rem;color:#333;text-align:center;margin-top:20px;line-height:1.7;opacity:0;animation:popIn .6s .4s cubic-bezier(.22,1,.36,1) forwards;}
+  .sending{opacity:.5;pointer-events:none;}
 </style>
 </head>
 <body>
@@ -220,52 +236,83 @@ function setProgress(){
   });
 }
 
-function render(){
+// Smooth step transition — fade out, swap, fade in
+function transitionTo(newStep){
+  const wrap = document.querySelector('.step-wrap');
+  if(!wrap){ state.step = newStep; render(true); return; }
+  wrap.classList.add('leaving');
+  setTimeout(()=>{
+    state.step = newStep;
+    render(true);
+  }, 220);
+}
+
+function render(instant=false){
   setProgress();
   const c = document.getElementById('stepContent');
-  // Wrap in step-content div for animation
   let html = '';
   if(state.step===1)   html = step1HTML();
   if(state.step===2)   html = step2HTML();
   if(state.step===2.5) html = step25HTML();
   if(state.step===3)   html = step3HTML();
   if(state.step===4)   html = resultsHTML();
-  c.innerHTML = `<div class="step-content">${html}</div>`;
+
+  if(instant){
+    c.innerHTML = `<div class="step-wrap entering">${html}</div>`;
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        const w = c.querySelector('.step-wrap');
+        if(w){ w.classList.remove('entering'); w.classList.add('visible'); }
+      });
+    });
+  } else {
+    c.innerHTML = `<div class="step-wrap visible">${html}</div>`;
+  }
+
   attachEvents();
   if(state.step===4) runCountUps();
 }
 
-// Count-up animation
-function countUp(el, target, duration=1200, prefix='', suffix=''){
-  const start = 0;
+// Update only selection state without re-rendering step
+function updateGenderUI(g){
+  document.querySelectorAll('.gender-btn').forEach(b=>{
+    b.classList.toggle('selected', b.dataset.gender===g);
+  });
+}
+function updatePaceUI(p){
+  document.querySelectorAll('[data-pace]').forEach(b=>{
+    b.classList.toggle('selected', b.dataset.pace===p);
+  });
+}
+function updateBarrierUI(b){
+  document.querySelectorAll('[data-barrier]').forEach(el=>{
+    el.classList.toggle('selected', el.dataset.barrier===b);
+  });
+}
+
+function countUp(el, target, duration=1100){
   const startTime = performance.now();
   function update(now){
-    const elapsed = now - startTime;
-    const progress = Math.min(elapsed/duration, 1);
-    const ease = 1 - Math.pow(1-progress, 3);
-    const val = Math.round(start + (target-start)*ease);
-    el.textContent = prefix + val.toLocaleString() + suffix;
-    if(progress < 1) requestAnimationFrame(update);
+    const p = Math.min((now-startTime)/duration, 1);
+    const ease = 1-Math.pow(1-p, 4);
+    el.textContent = Math.round(target*ease).toLocaleString();
+    if(p<1) requestAnimationFrame(update);
   }
   requestAnimationFrame(update);
 }
 
 function runCountUps(){
+  const r = calcResults();
   setTimeout(()=>{
-    const r = calcResults();
-    const els = {
-      'tdee-val':   r.tdee,
-      'cals-val':   r.targetCals,
-      'prot-val':   r.protein,
-      'carb-val':   r.carbs,
-      'fat-val':    r.fat,
-      'weeks-val':  r.weeks,
-    };
-    Object.entries(els).forEach(([id, val])=>{
-      const el = document.getElementById(id);
-      if(el) countUp(el, val, 1200);
+    [['tdee-val',r.tdee],['cals-val',r.targetCals],['prot-val',r.protein],
+     ['carb-val',r.carbs],['fat-val',r.fat],['weeks-val',r.weeks]]
+    .forEach(([id,val],i)=>{
+      setTimeout(()=>{
+        const el=document.getElementById(id);
+        if(el) countUp(el,val,1000);
+      }, i*60);
     });
-  }, 100);
+  }, 150);
 }
 
 function step1HTML(){
@@ -275,8 +322,8 @@ function step1HTML(){
     <div class="field">
       <label>Gender</label>
       <div class="gender-group">
-        <button class="gender-btn ${state.gender==='male'?'selected':''}" data-gender="male">Male</button>
-        <button class="gender-btn ${state.gender==='female'?'selected':''}" data-gender="female">Female</button>
+        <button class="gender-btn${state.gender==='male'?' selected':''}" data-gender="male">Male</button>
+        <button class="gender-btn${state.gender==='female'?' selected':''}" data-gender="female">Female</button>
       </div>
     </div>
     <div class="row">
@@ -297,7 +344,7 @@ function step1HTML(){
       <label>Activity Level</label>
       <select id="activity">
         <option value="">Select your activity level</option>
-        ${Object.entries(activityLabels).map(([v,l])=>`<option value="${v}" ${state.activity===v?'selected':''}>${l}</option>`).join('')}
+        ${Object.entries(activityLabels).map(([v,l])=>`<option value="${v}"${state.activity===v?' selected':''}>${l}</option>`).join('')}
       </select>
     </div>
     <div id="err1" class="error">Please fill in all fields.</div>
@@ -305,7 +352,7 @@ function step1HTML(){
 }
 
 function step2HTML(){
-  const paces = [
+  const paces=[
     {id:'gentle',    title:'Gentle (0.25 kg/week)',  desc:'Sustainable, minimal sacrifice — ideal for long-term results'},
     {id:'moderate',  title:'Moderate (0.5 kg/week)', desc:'Balanced approach — the most popular choice'},
     {id:'aggressive',title:'Aggressive (1 kg/week)', desc:'Fast results — requires strong commitment'},
@@ -321,7 +368,7 @@ function step2HTML(){
       <label>Preferred Pace</label>
       <div class="pace-group">
         ${paces.map(p=>`
-          <button class="pace-btn ${state.pace===p.id?'selected':''}" data-pace="${p.id}">
+          <button class="pace-btn${state.pace===p.id?' selected':''}" data-pace="${p.id}">
             <span class="pace-title">${p.title}</span>
             <span class="pace-desc">${p.desc}</span>
           </button>`).join('')}
@@ -333,7 +380,7 @@ function step2HTML(){
 }
 
 function step25HTML(){
-  const barriers = [
+  const barriers=[
     {id:'stress',     icon:'😩', title:'Stress & Emotional Eating',     desc:'Food becomes a coping mechanism for stress or emotions'},
     {id:'time',       icon:'⏰', title:'Lack of Time',                   desc:'Too busy to meal prep, cook or stay consistent'},
     {id:'knowledge',  icon:'🤷', title:'Not Knowing What to Eat',        desc:'Confused by conflicting advice and fad diets'},
@@ -346,7 +393,7 @@ function step25HTML(){
       <label>What's your #1 barrier to reaching your goal?</label>
       <div class="pace-group">
         ${barriers.map(b=>`
-          <button class="pace-btn ${state.barrier===b.id?'selected':''}" data-barrier="${b.id}">
+          <button class="pace-btn${state.barrier===b.id?' selected':''}" data-barrier="${b.id}">
             <span class="pace-title">${b.icon} ${b.title}</span>
             <span class="pace-desc">${b.desc}</span>
           </button>`).join('')}
@@ -382,26 +429,26 @@ function step3HTML(){
 }
 
 function calcResults(){
-  const w=parseFloat(state.weightKg), h=parseFloat(state.heightCm),
-        a=parseInt(state.age), act=parseFloat(state.activity), tw=parseFloat(state.targetKg);
-  let bmr = state.gender==='male' ? 10*w+6.25*h-5*a+5 : 10*w+6.25*h-5*a-161;
-  const tdee = Math.round(bmr*act);
-  const weeklyKg = state.pace==='gentle'?0.25:state.pace==='moderate'?0.5:1;
-  const deficit = weeklyKg*7700/7;
-  const diff = w-tw;
-  const losing = diff>0;
-  const targetCals = losing ? Math.round(tdee-deficit) : Math.round(tdee+deficit);
-  const protein = Math.round((targetCals*0.30)/4);
-  const carbs   = Math.round((targetCals*0.40)/4);
-  const fat     = Math.round((targetCals*0.30)/9);
-  const weeks   = Math.round(Math.abs(diff)/weeklyKg);
-  const months  = (weeks/4.33).toFixed(1);
-  return {tdee,targetCals,protein,carbs,fat,weeks,months,losing,weeklyKg,diff:Math.abs(diff).toFixed(1)};
+  const w=parseFloat(state.weightKg),h=parseFloat(state.heightCm),
+        a=parseInt(state.age),act=parseFloat(state.activity),tw=parseFloat(state.targetKg);
+  let bmr=state.gender==='male'?10*w+6.25*h-5*a+5:10*w+6.25*h-5*a-161;
+  const tdee=Math.round(bmr*act);
+  const weeklyKg=state.pace==='gentle'?0.25:state.pace==='moderate'?0.5:1;
+  const deficit=weeklyKg*7700/7;
+  const diff=w-tw;
+  const losing=diff>0;
+  const targetCals=losing?Math.round(tdee-deficit):Math.round(tdee+deficit);
+  const protein=Math.round((targetCals*.30)/4);
+  const carbs=Math.round((targetCals*.40)/4);
+  const fat=Math.round((targetCals*.30)/9);
+  const weeks=Math.round(Math.abs(diff)/weeklyKg);
+  const months=(weeks/4.33).toFixed(1);
+  return{tdee,targetCals,protein,carbs,fat,weeks,months,losing,weeklyKg,diff:Math.abs(diff).toFixed(1)};
 }
 
 function resultsHTML(){
-  const r = calcResults();
-  const goal = r.losing?'lose':'gain';
+  const r=calcResults();
+  const goal=r.losing?'lose':'gain';
   return `
     <div class="results-header">
       <h2>Your Results</h2>
@@ -409,12 +456,12 @@ function resultsHTML(){
     </div>
     <div class="stat-card">
       <div class="stat-label">Daily Calorie Maintenance (TDEE)</div>
-      <div class="stat-value"><span id="tdee-val">0</span> <span style="font-size:1rem;color:#888">kcal</span></div>
+      <div class="stat-value"><span id="tdee-val">0</span> <span style="font-size:1rem;color:#444">kcal</span></div>
       <div class="stat-sub">What your body burns daily at your current activity level</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Your Daily Calorie Target</div>
-      <div class="stat-value"><span id="cals-val">0</span> <span style="font-size:1rem;color:#888">kcal</span></div>
+      <div class="stat-value"><span id="cals-val">0</span> <span style="font-size:1rem;color:#444">kcal</span></div>
       <div class="stat-sub">To ${goal} ${r.diff} kg at ${r.weeklyKg} kg/week</div>
     </div>
     <div class="macros">
@@ -436,7 +483,7 @@ function resultsHTML(){
     </div>
     <div class="timeline-card">
       <div class="stat-label">⏱ Estimated Timeline to Goal</div>
-      <div class="stat-value"><span id="weeks-val">0</span> weeks <span style="font-size:1rem;color:#888">(~${r.months} months)</span></div>
+      <div class="stat-value"><span id="weeks-val">0</span> <span style="font-size:1.1rem;color:#c9a84c">weeks</span> <span style="font-size:.95rem;color:#444">(~${r.months} months)</span></div>
       <div class="stat-sub">Based on ${r.weeklyKg} kg/week at your chosen pace</div>
     </div>
     <div class="cta-box">
@@ -446,49 +493,51 @@ function resultsHTML(){
     </div>`;
 }
 
-async function submitLead(n, e, p){
-  const r = calcResults();
-  try {
-    await fetch(GHL_WEBHOOK, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        firstName:          n.split(' ')[0],
-        lastName:           n.split(' ').slice(1).join(' ') || '',
-        email:              e,
-        phone:              p,
-        gender:             state.gender,
-        age:                state.age,
-        currentWeightKg:    state.weightKg,
-        heightCm:           state.heightCm,
-        activityLevel:      state.activity,
-        targetWeightKg:     state.targetKg,
-        pace:               state.pace,
-        primaryBarrier:     state.barrier,
-        tdee:               r.tdee,
-        dailyCalorieTarget: r.targetCals,
-        proteinG:           r.protein,
-        carbsG:             r.carbs,
-        fatG:               r.fat,
-        estimatedWeeks:     r.weeks,
-        estimatedMonths:    r.months,
-        source:             'SHF Calorie Calculator'
+async function submitLead(n,e,p){
+  const r=calcResults();
+  try{
+    await fetch(GHL_WEBHOOK,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        firstName:n.split(' ')[0],lastName:n.split(' ').slice(1).join(' ')||'',
+        email:e,phone:p,gender:state.gender,age:state.age,
+        currentWeightKg:state.weightKg,heightCm:state.heightCm,
+        activityLevel:state.activity,targetWeightKg:state.targetKg,
+        pace:state.pace,primaryBarrier:state.barrier,
+        tdee:r.tdee,dailyCalorieTarget:r.targetCals,
+        proteinG:r.protein,carbsG:r.carbs,fatG:r.fat,
+        estimatedWeeks:r.weeks,estimatedMonths:r.months,
+        source:'SHF Calorie Calculator'
       })
     });
-  } catch(err){
-    console.error('GHL webhook error:', err);
-  }
+  }catch(err){console.error('GHL webhook error:',err);}
 }
 
 function attachEvents(){
-  document.querySelectorAll('[data-gender]').forEach(b=>{
-    b.addEventListener('click',()=>{state.gender=b.dataset.gender;render();});
+  // Gender — just toggle CSS, no re-render
+  document.querySelectorAll('.gender-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      state.gender=b.dataset.gender;
+      updateGenderUI(state.gender);
+    });
   });
+
+  // Pace — save target weight, toggle CSS only
   document.querySelectorAll('[data-pace]').forEach(b=>{
-    b.addEventListener('click',()=>{state.pace=b.dataset.pace;render();});
+    b.addEventListener('click',()=>{
+      const tw=document.getElementById('targetWeight');
+      if(tw) state.targetKg=tw.value;
+      state.pace=b.dataset.pace;
+      updatePaceUI(state.pace);
+    });
   });
+
+  // Barrier — toggle CSS only
   document.querySelectorAll('[data-barrier]').forEach(b=>{
-    b.addEventListener('click',()=>{state.barrier=b.dataset.barrier;render();});
+    b.addEventListener('click',()=>{
+      state.barrier=b.dataset.barrier;
+      updateBarrierUI(state.barrier);
+    });
   });
 
   if(state.step===1){
@@ -500,7 +549,7 @@ function attachEvents(){
       if(!state.gender||!state.age||!state.weightKg||!state.heightCm||!state.activity){
         document.getElementById('err1').style.display='block'; return;
       }
-      state.step=2; render();
+      transitionTo(2);
     });
   }
   if(state.step===2){
@@ -509,31 +558,32 @@ function attachEvents(){
       if(!state.targetKg||!state.pace){
         document.getElementById('err2').style.display='block'; return;
       }
-      state.step=2.5; render();
+      transitionTo(2.5);
     });
-    document.getElementById('back2').addEventListener('click',()=>{state.step=1;render();});
+    document.getElementById('back2').addEventListener('click',()=>transitionTo(1));
   }
   if(state.step===2.5){
     document.getElementById('next25').addEventListener('click',()=>{
       if(!state.barrier){document.getElementById('err25').style.display='block';return;}
-      state.step=3; render();
+      transitionTo(3);
     });
-    document.getElementById('back25').addEventListener('click',()=>{state.step=2;render();});
+    document.getElementById('back25').addEventListener('click',()=>transitionTo(2));
   }
   if(state.step===3){
-    document.getElementById('next3').addEventListener('click', async ()=>{
+    document.getElementById('next3').addEventListener('click',async()=>{
       const n=document.getElementById('leadName').value.trim();
       const e=document.getElementById('leadEmail').value.trim();
       const p=document.getElementById('leadPhone').value.trim();
-      const emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
-      if(!n||!emailOk||!p){document.getElementById('err3').style.display='block';return;}
+      if(!n||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)||!p){
+        document.getElementById('err3').style.display='block'; return;
+      }
       state.name=n; state.email=e; state.phone=p;
       const btn=document.getElementById('next3');
-      btn.textContent='Sending...'; btn.classList.add('sending');
+      btn.textContent='Just a moment...'; btn.classList.add('sending');
       await submitLead(n,e,p);
-      state.step=4; render();
+      transitionTo(4);
     });
-    document.getElementById('back3').addEventListener('click',()=>{state.step=2.5;render();});
+    document.getElementById('back3').addEventListener('click',()=>transitionTo(2.5));
   }
 }
 
