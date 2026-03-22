@@ -79,8 +79,6 @@
   .results-header p{color:#888;font-size:.8rem;margin-top:6px;}
 
   .disclaimer{font-size:.65rem;color:#555;text-align:center;margin-top:20px;line-height:1.6;}
-
-  /* Sending state */
   .sending{opacity:.6;pointer-events:none;}
 </style>
 </head>
@@ -92,28 +90,19 @@
 </div>
 
 <div class="card" id="card">
-  <div class="progress" id="progress">
-    <div class="progress-step active" id="p1"></div>
-    <div class="progress-step" id="p2"></div>
-    <div class="progress-step" id="p3"></div>
-    <div class="progress-step" id="p4"></div>
-  </div>
+  <div class="progress" id="progress"></div>
   <div id="stepContent"></div>
 </div>
 
 <p class="disclaimer">Results are estimates based on established formulas (Mifflin-St Jeor).<br>Always consult a healthcare professional before making dietary changes.</p>
 
 <script>
-// ============================================================
-// CONFIGURATION — update these when ready
-// ============================================================
 const GHL_WEBHOOK = 'https://services.leadconnectorhq.com/hooks/PnQahILuttFxIjshfKat/webhook-trigger/68558633-7500-454b-a894-0bb207a37437';
 const BOOKING_LINK = 'https://api.leadconnectorhq.com/widget/booking/DT84Wm1CtrP2JAS8BBfP';
-// ============================================================
 
 const state = {
   step:1, gender:'', age:'', heightCm:'', weightKg:'',
-  activity:'', targetKg:'', pace:'', name:'', email:'', phone:''
+  activity:'', targetKg:'', pace:'', barrier:'', name:'', email:'', phone:''
 };
 
 const activityLabels = {
@@ -124,25 +113,34 @@ const activityLabels = {
   '1.9':   'Extremely active (physical job + training)'
 };
 
-function setProgress(s){
-  for(let i=1;i<=4;i++)
-    document.getElementById('p'+i).classList.toggle('active',i<=s);
+const STEPS = [1, 2, 2.5, 3, 4];
+
+function setProgress(){
+  const prog = document.getElementById('progress');
+  prog.innerHTML = '';
+  const idx = STEPS.indexOf(state.step);
+  STEPS.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'progress-step' + (i <= idx ? ' active' : '');
+    prog.appendChild(d);
+  });
 }
 
 function render(){
-  setProgress(state.step);
+  setProgress();
   const c = document.getElementById('stepContent');
-  if(state.step===1) c.innerHTML = step1HTML();
-  if(state.step===2) c.innerHTML = step2HTML();
-  if(state.step===3) c.innerHTML = step3HTML();
-  if(state.step===4) c.innerHTML = resultsHTML();
+  if(state.step===1)   c.innerHTML = step1HTML();
+  if(state.step===2)   c.innerHTML = step2HTML();
+  if(state.step===2.5) c.innerHTML = step25HTML();
+  if(state.step===3)   c.innerHTML = step3HTML();
+  if(state.step===4)   c.innerHTML = resultsHTML();
   attachEvents();
 }
 
 function step1HTML(){
   return `
     <h2>Your Stats</h2>
-    <p class="subtitle">Step 1 of 3 — Tell us about you</p>
+    <p class="subtitle">Step 1 of 4 — Tell us about you</p>
     <div class="field">
       <label>Gender</label>
       <div class="gender-group">
@@ -177,13 +175,13 @@ function step1HTML(){
 
 function step2HTML(){
   const paces = [
-    {id:'gentle',   title:'Gentle (0.25 kg/week)',   desc:'Sustainable, minimal sacrifice — ideal for long-term results'},
-    {id:'moderate', title:'Moderate (0.5 kg/week)',   desc:'Balanced approach — the most popular choice'},
+    {id:'gentle',    title:'Gentle (0.25 kg/week)',  desc:'Sustainable, minimal sacrifice — ideal for long-term results'},
+    {id:'moderate',  title:'Moderate (0.5 kg/week)', desc:'Balanced approach — the most popular choice'},
     {id:'aggressive',title:'Aggressive (1 kg/week)', desc:'Fast results — requires strong commitment'},
   ];
   return `
     <h2>Your Goal</h2>
-    <p class="subtitle">Step 2 of 3 — Set your target</p>
+    <p class="subtitle">Step 2 of 4 — Set your target</p>
     <div class="field">
       <label>Target Weight (kg)</label>
       <input type="number" id="targetWeight" placeholder="e.g. 75" value="${state.targetKg}" min="30" max="300"/>
@@ -201,6 +199,31 @@ function step2HTML(){
     <div id="err2" class="error">Please fill in your target weight and select a pace.</div>
     <button class="btn" id="next2">Continue →</button>
     <button class="btn btn-outline" id="back2">← Back</button>`;
+}
+
+function step25HTML(){
+  const barriers = [
+    {id:'stress',     icon:'😩', title:'Stress & Emotional Eating',     desc:'Food becomes a coping mechanism for stress or emotions'},
+    {id:'time',       icon:'⏰', title:'Lack of Time',                   desc:'Too busy to meal prep, cook or stay consistent'},
+    {id:'knowledge',  icon:'🤷', title:'Not Knowing What to Eat',        desc:'Confused by conflicting advice and fad diets'},
+    {id:'motivation', icon:'📉', title:'Staying Motivated & Consistent', desc:'Starting strong but struggling to keep momentum'},
+  ];
+  return `
+    <h2>One Quick Question</h2>
+    <p class="subtitle">Step 3 of 4 — Your biggest challenge</p>
+    <div class="field">
+      <label>What's your #1 barrier to reaching your goal?</label>
+      <div class="pace-group">
+        ${barriers.map(b=>`
+          <button class="pace-btn ${state.barrier===b.id?'selected':''}" data-barrier="${b.id}">
+            <span class="pace-title">${b.icon} ${b.title}</span>
+            <span class="pace-desc">${b.desc}</span>
+          </button>`).join('')}
+      </div>
+    </div>
+    <div id="err25" class="error">Please select your biggest barrier.</div>
+    <button class="btn" id="next25">Continue →</button>
+    <button class="btn btn-outline" id="back25">← Back</button>`;
 }
 
 function step3HTML(){
@@ -248,7 +271,6 @@ function calcResults(){
 function resultsHTML(){
   const r = calcResults();
   const goal = r.losing?'lose':'gain';
-  const bookingHref = BOOKING_LINK !== '#' ? BOOKING_LINK : null;
   return `
     <div class="results-header">
       <h2>Your Results</h2>
@@ -289,9 +311,7 @@ function resultsHTML(){
     <div class="cta-box">
       <h3>Ready to Make It Happen?</h3>
       <p>These numbers are your starting point. With the right coaching, accountability and a personalised plan — results come faster and stick longer.</p>
-      ${bookingHref
-        ? `<a class="btn-cta" href="${bookingHref}" target="_blank">Book a Free Coaching Call</a>`
-        : `<button class="btn-cta" onclick="alert('Add your booking link to the BOOKING_LINK variable!')">Book a Free Coaching Call</button>`}
+      <a class="btn-cta" href="${BOOKING_LINK}" target="_blank">Book a Free Coaching Call</a>
     </div>`;
 }
 
@@ -302,25 +322,26 @@ async function submitLead(n, e, p){
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        firstName:        n.split(' ')[0],
-        lastName:         n.split(' ').slice(1).join(' ') || '',
-        email:            e,
-        phone:            p,
-        gender:           state.gender,
-        age:              state.age,
-        currentWeightKg:  state.weightKg,
-        heightCm:         state.heightCm,
-        activityLevel:    state.activity,
-        targetWeightKg:   state.targetKg,
-        pace:             state.pace,
-        tdee:             r.tdee,
+        firstName:          n.split(' ')[0],
+        lastName:           n.split(' ').slice(1).join(' ') || '',
+        email:              e,
+        phone:              p,
+        gender:             state.gender,
+        age:                state.age,
+        currentWeightKg:    state.weightKg,
+        heightCm:           state.heightCm,
+        activityLevel:      state.activity,
+        targetWeightKg:     state.targetKg,
+        pace:               state.pace,
+        primaryBarrier:     state.barrier,
+        tdee:               r.tdee,
         dailyCalorieTarget: r.targetCals,
-        proteinG:         r.protein,
-        carbsG:           r.carbs,
-        fatG:             r.fat,
-        estimatedWeeks:   r.weeks,
-        estimatedMonths:  r.months,
-        source:           'SHF Calorie Calculator'
+        proteinG:           r.protein,
+        carbsG:             r.carbs,
+        fatG:               r.fat,
+        estimatedWeeks:     r.weeks,
+        estimatedMonths:    r.months,
+        source:             'SHF Calorie Calculator'
       })
     });
   } catch(err){
@@ -334,6 +355,9 @@ function attachEvents(){
   });
   document.querySelectorAll('[data-pace]').forEach(b=>{
     b.addEventListener('click',()=>{state.pace=b.dataset.pace;render();});
+  });
+  document.querySelectorAll('[data-barrier]').forEach(b=>{
+    b.addEventListener('click',()=>{state.barrier=b.dataset.barrier;render();});
   });
 
   if(state.step===1){
@@ -355,9 +379,17 @@ function attachEvents(){
       if(!state.targetKg||!state.pace){
         document.getElementById('err2').style.display='block'; return;
       }
-      state.step=3; render();
+      state.step=2.5; render();
     });
     document.getElementById('back2').addEventListener('click',()=>{state.step=1;render();});
+  }
+
+  if(state.step===2.5){
+    document.getElementById('next25').addEventListener('click',()=>{
+      if(!state.barrier){document.getElementById('err25').style.display='block';return;}
+      state.step=3; render();
+    });
+    document.getElementById('back25').addEventListener('click',()=>{state.step=2;render();});
   }
 
   if(state.step===3){
@@ -373,7 +405,7 @@ function attachEvents(){
       await submitLead(n,e,p);
       state.step=4; render();
     });
-    document.getElementById('back3').addEventListener('click',()=>{state.step=2;render();});
+    document.getElementById('back3').addEventListener('click',()=>{state.step=3;render();});
   }
 }
 
