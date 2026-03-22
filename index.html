@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sam Howes Fitness – Calorie Calculator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Playfair+Display:wght@700&display=swap');
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0a0a0a;color:#f0f0f0;font-family:'Montserrat',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+
+  .logo{text-align:center;margin-bottom:28px;}
+  .logo span{font-family:'Playfair Display',serif;font-size:1.5rem;color:#c9a84c;letter-spacing:2px;}
+  .logo p{font-size:.65rem;letter-spacing:4px;color:#888;text-transform:uppercase;margin-top:4px;}
+
+  .card{background:#111;border:1px solid #222;border-radius:16px;padding:40px 36px;width:100%;max-width:500px;box-shadow:0 20px 60px rgba(0,0,0,.7);}
+
+  .progress{display:flex;gap:8px;margin-bottom:32px;}
+  .progress-step{flex:1;height:3px;background:#222;border-radius:2px;transition:background .4s;}
+  .progress-step.active{background:#c9a84c;}
+
+  h2{font-family:'Playfair Display',serif;font-size:1.6rem;color:#fff;margin-bottom:6px;}
+  .subtitle{font-size:.78rem;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:28px;}
+
+  .field{margin-bottom:18px;}
+  label{display:block;font-size:.72rem;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;}
+  input,select{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:13px 16px;color:#f0f0f0;font-family:'Montserrat',sans-serif;font-size:.9rem;outline:none;transition:border .2s;}
+  input:focus,select:focus{border-color:#c9a84c;}
+  select option{background:#1a1a1a;}
+
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+  .gender-group{display:flex;gap:10px;}
+  .gender-btn{flex:1;padding:12px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;color:#aaa;font-family:'Montserrat',sans-serif;font-size:.82rem;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
+  .gender-btn.selected{background:#1e1a0e;border-color:#c9a84c;color:#c9a84c;}
+
+  .pace-group{display:flex;gap:10px;flex-direction:column;}
+  .pace-btn{padding:14px 16px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;color:#aaa;font-family:'Montserrat',sans-serif;font-size:.82rem;cursor:pointer;transition:all .2s;text-align:left;}
+  .pace-btn .pace-title{font-weight:700;color:#ddd;display:block;margin-bottom:2px;}
+  .pace-btn .pace-desc{font-size:.72rem;color:#666;}
+  .pace-btn.selected{background:#1e1a0e;border-color:#c9a84c;}
+  .pace-btn.selected .pace-title{color:#c9a84c;}
+
+  .btn{width:100%;padding:16px;background:linear-gradient(135deg,#c9a84c,#e8c96a);border:none;border-radius:8px;color:#0a0a0a;font-family:'Montserrat',sans-serif;font-weight:800;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:10px;transition:opacity .2s;}
+  .btn:hover{opacity:.9;}
+  .btn-outline{background:transparent;border:1px solid #333;color:#888;font-weight:600;margin-top:8px;}
+  .btn-outline:hover{border-color:#555;color:#aaa;opacity:1;}
+
+  .error{color:#e05555;font-size:.72rem;margin-top:4px;display:none;}
+
+  .stat-card{background:#161616;border:1px solid #222;border-radius:12px;padding:20px 22px;margin-bottom:14px;}
+  .stat-label{font-size:.65rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+  .stat-value{font-size:2rem;font-weight:800;color:#c9a84c;}
+  .stat-sub{font-size:.75rem;color:#666;margin-top:4px;}
+
+  .macros{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;}
+  .macro-card{background:#161616;border:1px solid #222;border-radius:12px;padding:16px 12px;text-align:center;}
+  .macro-label{font-size:.6rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+  .macro-value{font-size:1.3rem;font-weight:800;color:#fff;}
+  .macro-unit{font-size:.65rem;color:#666;margin-top:2px;}
+
+  .timeline-card{background:linear-gradient(135deg,#1a1500,#1e1a0e);border:1px solid #c9a84c44;border-radius:12px;padding:20px 22px;margin-bottom:20px;}
+  .timeline-card .stat-value{font-size:1.6rem;}
+
+  .cta-box{background:#111;border:1px solid #c9a84c44;border-radius:12px;padding:24px;text-align:center;margin-top:8px;}
+  .cta-box h3{font-family:'Playfair Display',serif;font-size:1.2rem;color:#c9a84c;margin-bottom:8px;}
+  .cta-box p{font-size:.78rem;color:#888;margin-bottom:16px;line-height:1.6;}
+  .btn-cta{padding:14px 28px;background:linear-gradient(135deg,#c9a84c,#e8c96a);border:none;border-radius:8px;color:#0a0a0a;font-family:'Montserrat',sans-serif;font-weight:800;font-size:.82rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:opacity .2s;text-decoration:none;display:inline-block;}
+  .btn-cta:hover{opacity:.9;}
+
+  .lead-lock{text-align:center;margin-bottom:24px;}
+  .lead-lock .lock-icon{font-size:2.5rem;margin-bottom:12px;}
+  .lead-lock h2{font-size:1.5rem;}
+  .lead-lock p{color:#888;font-size:.8rem;margin-top:8px;line-height:1.6;}
+
+  .results-header{text-align:center;margin-bottom:28px;}
+  .results-header h2{font-size:1.8rem;}
+  .results-header p{color:#888;font-size:.8rem;margin-top:6px;}
+
+  .disclaimer{font-size:.65rem;color:#555;text-align:center;margin-top:20px;line-height:1.6;}
+
+  /* Sending state */
+  .sending{opacity:.6;pointer-events:none;}
+</style>
+</head>
+<body>
+
+<div class="logo">
+  <span>SAM HOWES FITNESS</span>
+  <p>Premium Weight Management Coaching</p>
+</div>
+
+<div class="card" id="card">
+  <div class="progress" id="progress">
+    <div class="progress-step active" id="p1"></div>
+    <div class="progress-step" id="p2"></div>
+    <div class="progress-step" id="p3"></div>
+    <div class="progress-step" id="p4"></div>
+  </div>
+  <div id="stepContent"></div>
+</div>
+
+<p class="disclaimer">Results are estimates based on established formulas (Mifflin-St Jeor).<br>Always consult a healthcare professional before making dietary changes.</p>
+
+<script>
+// ============================================================
+// CONFIGURATION — update these when ready
+// ============================================================
+const GHL_WEBHOOK = 'https://services.leadconnectorhq.com/hooks/PnQahILuttFxIjshfKat/webhook-trigger/68558633-7500-454b-a894-0bb207a37437';
+const BOOKING_LINK = '#'; // ← Replace with your GHL calendar or Calendly link
+// ============================================================
+
+const state = {
+  step:1, gender:'', age:'', heightCm:'', weightKg:'',
+  activity:'', targetKg:'', pace:'', name:'', email:'', phone:''
+};
+
+const activityLabels = {
+  '1.2':   'Sedentary (desk job, little exercise)',
+  '1.375': 'Lightly active (1–3x/week)',
+  '1.55':  'Moderately active (3–5x/week)',
+  '1.725': 'Very active (6–7x/week)',
+  '1.9':   'Extremely active (physical job + training)'
+};
+
+function setProgress(s){
+  for(let i=1;i<=4;i++)
+    document.getElementById('p'+i).classList.toggle('active',i<=s);
+}
+
+function render(){
+  setProgress(state.step);
+  const c = document.getElementById('stepContent');
+  if(state.step===1) c.innerHTML = step1HTML();
+  if(state.step===2) c.innerHTML = step2HTML();
+  if(state.step===3) c.innerHTML = step3HTML();
+  if(state.step===4) c.innerHTML = resultsHTML();
+  attachEvents();
+}
+
+function step1HTML(){
+  return `
+    <h2>Your Stats</h2>
+    <p class="subtitle">Step 1 of 3 — Tell us about you</p>
+    <div class="field">
+      <label>Gender</label>
+      <div class="gender-group">
+        <button class="gender-btn ${state.gender==='male'?'selected':''}" data-gender="male">Male</button>
+        <button class="gender-btn ${state.gender==='female'?'selected':''}" data-gender="female">Female</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>Age</label>
+        <input type="number" id="age" placeholder="e.g. 35" value="${state.age}" min="15" max="99"/>
+      </div>
+      <div class="field">
+        <label>Weight (kg)</label>
+        <input type="number" id="weight" placeholder="e.g. 85" value="${state.weightKg}" min="30" max="300"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Height (cm)</label>
+      <input type="number" id="height" placeholder="e.g. 175" value="${state.heightCm}" min="100" max="250"/>
+    </div>
+    <div class="field">
+      <label>Activity Level</label>
+      <select id="activity">
+        <option value="">Select your activity level</option>
+        ${Object.entries(activityLabels).map(([v,l])=>`<option value="${v}" ${state.activity===v?'selected':''}>${l}</option>`).join('')}
+      </select>
+    </div>
+    <div id="err1" class="error">Please fill in all fields.</div>
+    <button class="btn" id="next1">Continue →</button>`;
+}
+
+function step2HTML(){
+  const paces = [
+    {id:'gentle',   title:'Gentle (0.25 kg/week)',   desc:'Sustainable, minimal sacrifice — ideal for long-term results'},
+    {id:'moderate', title:'Moderate (0.5 kg/week)',   desc:'Balanced approach — the most popular choice'},
+    {id:'aggressive',title:'Aggressive (1 kg/week)', desc:'Fast results — requires strong commitment'},
+  ];
+  return `
+    <h2>Your Goal</h2>
+    <p class="subtitle">Step 2 of 3 — Set your target</p>
+    <div class="field">
+      <label>Target Weight (kg)</label>
+      <input type="number" id="targetWeight" placeholder="e.g. 75" value="${state.targetKg}" min="30" max="300"/>
+    </div>
+    <div class="field">
+      <label>Preferred Pace</label>
+      <div class="pace-group">
+        ${paces.map(p=>`
+          <button class="pace-btn ${state.pace===p.id?'selected':''}" data-pace="${p.id}">
+            <span class="pace-title">${p.title}</span>
+            <span class="pace-desc">${p.desc}</span>
+          </button>`).join('')}
+      </div>
+    </div>
+    <div id="err2" class="error">Please fill in your target weight and select a pace.</div>
+    <button class="btn" id="next2">Continue →</button>
+    <button class="btn btn-outline" id="back2">← Back</button>`;
+}
+
+function step3HTML(){
+  return `
+    <div class="lead-lock">
+      <div class="lock-icon">🔒</div>
+      <h2>Unlock Your Free Report</h2>
+      <p>Enter your details below to instantly receive your personalised calorie targets, macro breakdown and weight loss timeline.</p>
+    </div>
+    <div class="field">
+      <label>Full Name</label>
+      <input type="text" id="leadName" placeholder="e.g. Alex Johnson" value="${state.name}"/>
+    </div>
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" id="leadEmail" placeholder="e.g. alex@email.com" value="${state.email}"/>
+    </div>
+    <div class="field">
+      <label>Phone Number</label>
+      <input type="tel" id="leadPhone" placeholder="e.g. 021 123 4567" value="${state.phone}"/>
+    </div>
+    <div id="err3" class="error">Please fill in all fields with a valid email.</div>
+    <button class="btn" id="next3">🔓 Reveal My Results</button>
+    <button class="btn btn-outline" id="back3">← Back</button>`;
+}
+
+function calcResults(){
+  const w=parseFloat(state.weightKg), h=parseFloat(state.heightCm),
+        a=parseInt(state.age), act=parseFloat(state.activity), tw=parseFloat(state.targetKg);
+  let bmr = state.gender==='male' ? 10*w+6.25*h-5*a+5 : 10*w+6.25*h-5*a-161;
+  const tdee = Math.round(bmr*act);
+  const weeklyKg = state.pace==='gentle'?0.25:state.pace==='moderate'?0.5:1;
+  const deficit = weeklyKg*7700/7;
+  const diff = w-tw;
+  const losing = diff>0;
+  const targetCals = losing ? Math.round(tdee-deficit) : Math.round(tdee+deficit);
+  const protein = Math.round((targetCals*0.30)/4);
+  const carbs   = Math.round((targetCals*0.40)/4);
+  const fat     = Math.round((targetCals*0.30)/9);
+  const weeks   = Math.round(Math.abs(diff)/weeklyKg);
+  const months  = (weeks/4.33).toFixed(1);
+  return {tdee,targetCals,protein,carbs,fat,weeks,months,losing,weeklyKg,diff:Math.abs(diff).toFixed(1)};
+}
+
+function resultsHTML(){
+  const r = calcResults();
+  const goal = r.losing?'lose':'gain';
+  const bookingHref = BOOKING_LINK !== '#' ? BOOKING_LINK : null;
+  return `
+    <div class="results-header">
+      <h2>Your Results</h2>
+      <p>Personalised for ${state.name.split(' ')[0]}</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Daily Calorie Maintenance (TDEE)</div>
+      <div class="stat-value">${r.tdee.toLocaleString()} <span style="font-size:1rem;color:#888">kcal</span></div>
+      <div class="stat-sub">What your body burns daily at your current activity level</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Your Daily Calorie Target</div>
+      <div class="stat-value">${r.targetCals.toLocaleString()} <span style="font-size:1rem;color:#888">kcal</span></div>
+      <div class="stat-sub">To ${goal} ${r.diff} kg at ${r.weeklyKg} kg/week</div>
+    </div>
+    <div class="macros">
+      <div class="macro-card">
+        <div class="macro-label">Protein</div>
+        <div class="macro-value">${r.protein}g</div>
+        <div class="macro-unit">per day</div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-label">Carbs</div>
+        <div class="macro-value">${r.carbs}g</div>
+        <div class="macro-unit">per day</div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-label">Fat</div>
+        <div class="macro-value">${r.fat}g</div>
+        <div class="macro-unit">per day</div>
+      </div>
+    </div>
+    <div class="timeline-card">
+      <div class="stat-label">⏱ Estimated Timeline to Goal</div>
+      <div class="stat-value">${r.weeks} weeks <span style="font-size:1rem;color:#888">(~${r.months} months)</span></div>
+      <div class="stat-sub">Based on ${r.weeklyKg} kg/week at your chosen pace</div>
+    </div>
+    <div class="cta-box">
+      <h3>Ready to Make It Happen?</h3>
+      <p>These numbers are your starting point. With the right coaching, accountability and a personalised plan — results come faster and stick longer.</p>
+      ${bookingHref
+        ? `<a class="btn-cta" href="${bookingHref}" target="_blank">Book a Free Coaching Call</a>`
+        : `<button class="btn-cta" onclick="alert('Add your booking link to the BOOKING_LINK variable!')">Book a Free Coaching Call</button>`}
+    </div>`;
+}
+
+async function submitLead(n, e, p){
+  const r = calcResults();
+  try {
+    await fetch(GHL_WEBHOOK, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        firstName:        n.split(' ')[0],
+        lastName:         n.split(' ').slice(1).join(' ') || '',
+        email:            e,
+        phone:            p,
+        gender:           state.gender,
+        age:              state.age,
+        currentWeightKg:  state.weightKg,
+        heightCm:         state.heightCm,
+        activityLevel:    state.activity,
+        targetWeightKg:   state.targetKg,
+        pace:             state.pace,
+        tdee:             r.tdee,
+        dailyCalorieTarget: r.targetCals,
+        proteinG:         r.protein,
+        carbsG:           r.carbs,
+        fatG:             r.fat,
+        estimatedWeeks:   r.weeks,
+        estimatedMonths:  r.months,
+        source:           'SHF Calorie Calculator'
+      })
+    });
+  } catch(err){
+    console.error('GHL webhook error:', err);
+  }
+}
+
+function attachEvents(){
+  document.querySelectorAll('[data-gender]').forEach(b=>{
+    b.addEventListener('click',()=>{state.gender=b.dataset.gender;render();});
+  });
+  document.querySelectorAll('[data-pace]').forEach(b=>{
+    b.addEventListener('click',()=>{state.pace=b.dataset.pace;render();});
+  });
+
+  if(state.step===1){
+    document.getElementById('next1').addEventListener('click',()=>{
+      state.age=document.getElementById('age').value;
+      state.weightKg=document.getElementById('weight').value;
+      state.heightCm=document.getElementById('height').value;
+      state.activity=document.getElementById('activity').value;
+      if(!state.gender||!state.age||!state.weightKg||!state.heightCm||!state.activity){
+        document.getElementById('err1').style.display='block'; return;
+      }
+      state.step=2; render();
+    });
+  }
+
+  if(state.step===2){
+    document.getElementById('next2').addEventListener('click',()=>{
+      state.targetKg=document.getElementById('targetWeight').value;
+      if(!state.targetKg||!state.pace){
+        document.getElementById('err2').style.display='block'; return;
+      }
+      state.step=3; render();
+    });
+    document.getElementById('back2').addEventListener('click',()=>{state.step=1;render();});
+  }
+
+  if(state.step===3){
+    document.getElementById('next3').addEventListener('click', async ()=>{
+      const n=document.getElementById('leadName').value.trim();
+      const e=document.getElementById('leadEmail').value.trim();
+      const p=document.getElementById('leadPhone').value.trim();
+      const emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+      if(!n||!emailOk||!p){document.getElementById('err3').style.display='block';return;}
+      state.name=n; state.email=e; state.phone=p;
+      const btn=document.getElementById('next3');
+      btn.textContent='Sending...'; btn.classList.add('sending');
+      await submitLead(n,e,p);
+      state.step=4; render();
+    });
+    document.getElementById('back3').addEventListener('click',()=>{state.step=2;render();});
+  }
+}
+
+render();
+</script>
+</body>
+</html>
